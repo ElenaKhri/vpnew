@@ -58,6 +58,8 @@ public class MytishhiPageTest {
         step(("Проверяем, что платеж попал в корзину путём сравнения загаловка корзины"),()-> {
             Basket basket = new Basket();
             assertEquals("Оплата платежей", basket.href.getText());});
+        //hubhjhjb
+        //Лена добавила свой код
     }
 
 
