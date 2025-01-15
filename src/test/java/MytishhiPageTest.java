@@ -59,7 +59,7 @@ public class MytishhiPageTest {
             Basket basket = new Basket();
             assertEquals("Оплата платежей", basket.href.getText());});
         //семен добавил свой код3
-        //лена добавила свой код2
+        //лена добавила свой код3
     }
 
 
