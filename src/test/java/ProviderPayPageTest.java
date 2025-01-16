@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static com.codeborne.selenide.Condition.*;
 
 
-public class MytishhiPageTest {
+public class ProviderPayPageTest {
     @BeforeAll
     static void setUp() {
         Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers/muprcmytishhi/";
@@ -40,10 +40,10 @@ public class MytishhiPageTest {
 
     @Test
     @Feature("Оплата") //общее название для сторей, функционала
-    @Story("Проводим оплату") //отдельное название функции
+    @Story("Проводим успешный платёж поставщиком МУП Мытищи") //отдельное название функции
     @Owner("Елена Христич")
     @DisplayName("Создание платежа")
-    void createPayment(){
+    void createSuccesPaymentMytishhi(){
         SelenideLogger.addListener("allure", new AllureSelenide()); // логирует все команды селенида, подробное описание шагов
         MytishhiPage muprcmytishhiPage = new MytishhiPage();
         step(("Открываем главную страницу"),()-> {
@@ -72,4 +72,5 @@ public class MytishhiPageTest {
             GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
             assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });
 }
+
 }
