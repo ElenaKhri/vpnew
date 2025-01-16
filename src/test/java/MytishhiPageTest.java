@@ -4,18 +4,17 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Story;
 import io.qameta.allure.selenide.AllureSelenide;
-import org.example.Basket;
-import org.example.MytishhiPage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.codeborne.selenide.Selenide.*;
+import static io.qameta.allure.Allure.attachment;
 import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.open;
 
 
 public class MytishhiPageTest {
@@ -48,19 +47,29 @@ public class MytishhiPageTest {
         SelenideLogger.addListener("allure", new AllureSelenide()); // логирует все команды селенида, подробное описание шагов
         MytishhiPage muprcmytishhiPage = new MytishhiPage();
         step(("Открываем главную страницу"),()-> {
-            open("");});
+            open("");
+        attachment("Source", webdriver().driver().source());
+       screenshot("screenshot");});
         step(("Вводим лицевой счёт и нажимаем кнопку далее"),()-> {
             muprcmytishhiPage.setAccountNumber("0600124054");
             muprcmytishhiPage.pressButtonNext();});
         step(("Вводим ФИО и нажимаем на кнопку перейти к оплате"),()-> {
             muprcmytishhiPage.setFio("Иванов", "Иван","Иванович");
             muprcmytishhiPage.processedToPayment();});
-        step(("Проверяем, что платеж попал в корзину путём сравнения загаловка корзины"),()-> {
+        step(("Переходим на страницу шлюза"),()-> {
             Basket basket = new Basket();
-            assertEquals("Оплата платежей", basket.href.getText());});
-        //семен добавил свой код3
-        //лена добавила свой код3
-    }
+            /*ssertEquals("Оплата платежей", basket.href.getText());});*/
+            basket.payFromBasket();
+    });
+        step(("Заполняем данные карты и переходим к оплате"),()-> {
+        GatewayPage gatewayPage = new GatewayPage();
+        gatewayPage.setCardData("5555555555555599", "12",
+                "24","123", "ekhristich@vp.ru", "9136533897");
+        gatewayPage.goToPayByCard();
+        });
 
-
+        step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
+            GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
+            assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });
+}
 }
