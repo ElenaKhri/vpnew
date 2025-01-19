@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Condition.*;
 public class ProviderPayPageTest {
     @BeforeAll
     static void setUp() {
-        Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers/muprcmytishhi/";
+        Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers";
         Configuration.browser = "chrome";
         Configuration.browserVersion = "131.0.6778.205"; // Укажите версию вашего браузера
         Configuration.browserBinary = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // Укажите путь к исполняемому файлу Chrome, если необходимо
@@ -42,12 +42,12 @@ public class ProviderPayPageTest {
     @Feature("Оплата") //общее название для сторей, функционала
     @Story("Проводим успешный платёж поставщиком МУП Мытищи") //отдельное название функции
     @Owner("Елена Христич")
-    @DisplayName("Создание платежа")
+    @DisplayName("Проведение успешного платёжа на форме поставщика МУП Мытищи")
     void createSuccesPaymentMytishhi(){
         SelenideLogger.addListener("allure", new AllureSelenide()); // логирует все команды селенида, подробное описание шагов
         MytishhiPage muprcmytishhiPage = new MytishhiPage();
         step(("Открываем главную страницу"),()-> {
-            open("");
+            open("/muprcmytishhi/");
         attachment("Source", webdriver().driver().source());
        screenshot("screenshot");});
         step(("Вводим лицевой счёт и нажимаем кнопку далее"),()-> {
@@ -57,9 +57,9 @@ public class ProviderPayPageTest {
             muprcmytishhiPage.setFio("Иванов", "Иван","Иванович");
             muprcmytishhiPage.processedToPayment();});
         step(("Переходим на страницу шлюза"),()-> {
-            Basket basket = new Basket();
-            /*ssertEquals("Оплата платежей", basket.href.getText());});*/
-            basket.payFromBasket();
+            BasketPage basketPage = new BasketPage();
+            /*ssertEquals("Оплата платежей", basketPage.href.getText());});*/
+            basketPage.payFromBasket();
     });
         step(("Заполняем данные карты и переходим к оплате"),()-> {
         GatewayPage gatewayPage = new GatewayPage();
@@ -73,4 +73,41 @@ public class ProviderPayPageTest {
             assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });
 }
 
+
+@Test
+@Feature("Оплата")
+@Story("Проводим успешный платёж поставщиком ENTER (ООО «ЭНТЕР»), Интернет")
+@Owner("Елена Христич")
+@DisplayName("Проведение успешного платежа на форме поставщика ENTER (ООО «ЭНТЕР»), Интернет")
+void createSuccesPaymentEnterInt(){
+    SelenideLogger.addListener("allure", new AllureSelenide());
+    EnterIntPage enterIntPage = new EnterIntPage();
+    step(("Открываем страницу поставщика"),()-> {
+        open("/enter_int/");
+        attachment("Source", webdriver().driver().source());
+        screenshot("screenshot");});
+    step(("Вводим номер договора и сумму и нажимаем кнопку перейти к оплате"),()-> {
+        enterIntPage.setData("12345612","10.00");
+        enterIntPage.processedToPayment();});
+    step(("Переходим на страницу шлюза"),()-> {
+        BasketPage basketPage = new BasketPage();
+        basketPage.payFromBasket();});
+    step(("Заполняем данные карты и переходим к оплате"),()-> {
+        GatewayPage gatewayPage = new GatewayPage();
+        gatewayPage.setCardData("5555555555555599", "12",
+                "24","123", "ekhristich@vp.ru", "9136533897");
+        gatewayPage.goToPayByCard();});
+    step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
+        GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
+        assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText());});
+    }
+
+@Test
+@Feature("Оплата")
+@Story("Проводим успешный платёж поставщиком ENTER (ООО «ЭНТЕР»), Интернет")
+@Owner("Елена Христич")
+@DisplayName("Проведение успешного платежа на форме поставщика «Омская энергосбытовая компания» (ООО «ОЭК»)")
+void createSuccesPaymentOek(){
+    SelenideLogger.addListener("allure", new AllureSelenide());
+}
 }

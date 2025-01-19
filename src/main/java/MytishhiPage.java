@@ -31,9 +31,9 @@ public MytishhiPage setFio(String lastNam, String firstNam, String patranom ){
     return this;
 }
 
-public Basket processedToPayment(){
+public BasketPage processedToPayment(){
 buttonPay.shouldBe(visible).click();
-return new Basket();
+return new BasketPage();
 }
 
 }
