@@ -20,7 +20,7 @@ import static com.codeborne.selenide.Condition.*;
 public class ProviderPayPageTest {
     @BeforeAll
     static void setUp() {
-        Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers";
+        Configuration.baseUrl = "https://vp.ru/providers";
         Configuration.browser = "chrome";
         Configuration.browserVersion = "131.0.6778.205"; // Укажите версию вашего браузера
         Configuration.browserBinary = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // Укажите путь к исполняемому файлу Chrome, если необходимо
