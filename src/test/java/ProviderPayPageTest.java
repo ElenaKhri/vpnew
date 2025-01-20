@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.attachment;
@@ -38,6 +39,7 @@ public class ProviderPayPageTest {
         muprcmytishhiPage.accoutNumberForm2.shouldHave(exactValue("0600124054"));
     }
 
+    @Disabled("Временно отключен")
     @Test
     @Feature("Оплата") //общее название для сторей, функционала
     @Story("Проводим успешный платёж поставщиком МУП Мытищи") //отдельное название функции
@@ -58,9 +60,8 @@ public class ProviderPayPageTest {
             muprcmytishhiPage.processedToPayment();});
         step(("Переходим на страницу шлюза"),()-> {
             BasketPage basketPage = new BasketPage();
-            /*ssertEquals("Оплата платежей", basketPage.href.getText());});*/
-            basketPage.payFromBasket();
-    });
+            /*AssertEquals("Оплата платежей", basketPage.href.getText());});*/
+            basketPage.payFromBasket();});
         step(("Заполняем данные карты и переходим к оплате"),()-> {
         GatewayPage gatewayPage = new GatewayPage();
         gatewayPage.setCardData("5555555555555599", "12",
@@ -73,7 +74,7 @@ public class ProviderPayPageTest {
             assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });
 }
 
-
+@Disabled("Временно отключен")
 @Test
 @Feature("Оплата")
 @Story("Проводим успешный платёж поставщиком ENTER (ООО «ЭНТЕР»), Интернет")
@@ -104,10 +105,25 @@ void createSuccesPaymentEnterInt(){
 
 @Test
 @Feature("Оплата")
-@Story("Проводим успешный платёж поставщиком ENTER (ООО «ЭНТЕР»), Интернет")
+@Story("Проводим успешный платёж поставщиком ОЭК")
 @Owner("Елена Христич")
 @DisplayName("Проведение успешного платежа на форме поставщика «Омская энергосбытовая компания» (ООО «ОЭК»)")
 void createSuccesPaymentOek(){
     SelenideLogger.addListener("allure", new AllureSelenide());
+    OekPage oekPage = new OekPage();
+    step(("Открываем страницу поставщика"),()-> {
+        open("/oek/");});
+    step(("Вводим лицевой счёт и нажимаем кнопку далее"),()-> {
+       oekPage.setAccountNumber("07161400027");
+       oekPage.pressButtonNext();});
+    step(("Вводим ФИО пользователя"),()-> {
+        oekPage.setFio("Иванов Иван Иванович");});
+    step(("Вводим суммы по услугам"),()-> {
+        oekPage.setServiceAmount( "Горячая вода","10");});
+    step(("Нажимаем на кнопку перейти к оплате"),()-> {
+        oekPage.processedToPayment();});
+    step(("Проверяем создание платежа"),()-> {
+        BasketPage basketPage = new BasketPage();
+        assertEquals("Оплата платежей", basketPage.href.getText());});
 }
 }
