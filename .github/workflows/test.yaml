@@ -16,12 +16,14 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
       - uses: Xotabu4/selenoid-github-action@v2
-      - name: Install OpenVPN
+     - name: Install OpenVPN
         run: sudo apt-get update && sudo apt-get install -y openvpn
       - name: Configure OpenVPN
         run: |
           echo "${{ secrets.OPENVPN_CONFIG }}" > openvpn.ovpn
-          sudo openvpn --config openvpn.ovpn --daemon
+          echo "${{ secrets.OPENVPN_USERNAME }}" > openvpn.auth
+          echo "${{ secrets.OPENVPN_PASSWORD }}" >> openvpn.auth
+          sudo openvpn --config openvpn.ovpn --auth-user-pass openvpn.auth --daemon
       # запускаем тесты
       - name: Make gradlew executable
         run: chmod +x ./gradlew
