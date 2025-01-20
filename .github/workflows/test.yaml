@@ -4,31 +4,53 @@ on: workflow_dispatch
 
 jobs:
   test:
-    # где заускаем
+    # где запускаем
     runs-on: ubuntu-22.04
     # что делаем
     steps:
       # выкачиваем репозиторий
       - uses: actions/checkout@v4
+
       # настраиваем java
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+
+      # настраиваем Selenoid
       - uses: Xotabu4/selenoid-github-action@v2
-      
+
+      # устанавливаем OpenVPN
       - name: Install OpenVPN
         run: sudo apt-get update && sudo apt-get install -y openvpn
+
+      # настраиваем OpenVPN
       - name: Configure OpenVPN
         run: |
           echo "${{ secrets.OPENVPN_CONFIG }}" > openvpn.ovpn
           echo "${{ secrets.OPENVPN_USERNAME }}" > openvpn.auth
           echo "${{ secrets.OPENVPN_PASSWORD }}" >> openvpn.auth
           sudo openvpn --config openvpn.ovpn --auth-user-pass openvpn.auth --daemon
+
+      # проверка подключения OpenVPN
+      - name: Check OpenVPN connection
+        run: |
+          sleep 10  # ждем, пока OpenVPN установит соединение
+          ifconfig  # проверяем сетевые интерфейсы
+          curl -I https://www.google.com  # проверяем доступность интернета
+
+      # проверка статуса Selenoid
+      - name: Check Selenoid status
+        run: |
+          curl http://localhost:4444/wd/hub/status
+
       # запускаем тесты
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub
+
+      - name: Run tests
+        run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub --info
+
       # скачиваем историю тестов
       - uses: actions/checkout@v2
         if: always()
@@ -36,6 +58,7 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages
+
       # генерируем отчет
       - uses: simple-elf/allure-report-action@master
         if: always()
@@ -44,6 +67,7 @@ jobs:
           allure_results: build/allure-results
           allure_report: allure-report
           allure_history: allure-history
+
       # публикуем отчет
       - uses: peaceiris/actions-gh-pages@v2
         if: always()
@@ -51,3 +75,9 @@ jobs:
           PERSONAL_TOKEN: ${{ secrets.LENOCHKIN_TOKEN }}
           PUBLISH_BRANCH: gh-pages
           PUBLISH_DIR: allure-history
+
+      # очистка временных файлов
+      - name: Clean up
+        run: |
+          sudo rm -f openvpn.auth
+          sudo rm -f openvpn.ovpn
