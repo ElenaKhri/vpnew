@@ -4,7 +4,6 @@ on: workflow_dispatch
 
 jobs:
   test:
-    # Определяем, где будет выполняться задача
     runs-on: ubuntu-22.04
     steps:
       # Выкачиваем репозиторий
@@ -14,7 +13,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21.0.4'
+          java-version: '17'
 
       # Настраиваем Selenoid
       - uses: Xotabu4/selenoid-github-action@v2
@@ -31,14 +30,14 @@ jobs:
           echo "${{ secrets.OPENVPN_PASSWORD }}" >> openvpn.auth
           sudo openvpn --config openvpn.ovpn --auth-user-pass openvpn.auth --daemon
 
-      # Проверяем подключение OpenVPN
+      # Проверка подключения OpenVPN
       - name: Check OpenVPN connection
         run: |
           sleep 10  # ждем, пока OpenVPN установит соединение
           ip a  # проверяем сетевые интерфейсы
           curl -I https://www.google.com  # проверяем доступность интернета
 
-      # Проверяем статус Selenoid
+      # Проверка статуса Selenoid
       - name: Check Selenoid status
         run: |
           curl http://localhost:4444/wd/hub/status
@@ -47,9 +46,13 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Запускаем тесты
+      # Очистка кэша Gradle
+      - name: Clean Gradle cache
+        run: ./gradlew clean
+
+      # Запускаем тесты с указанием версии Chrome
       - name: Run tests
-        run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub --info
+        run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub --info -Dselenide.browser=chrome -Dselenide.browserVersion=132
 
       # Скачиваем историю тестов
       - uses: actions/checkout@v4
