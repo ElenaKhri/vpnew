@@ -74,7 +74,7 @@ void createSuccesPaymentEnterInt(){
         gatewayPage.goToPayByCard();});
     step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
         GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
-        assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText());});
+        assertEquals("Оплата прошла успешно", gwSuccessPayPage.getHref());});
 
     }
 
