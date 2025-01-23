@@ -24,13 +24,20 @@ allure {
     }
 }
 
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
 dependencies {
     implementation 'com.codeborne:selenide:7.5.0'
+    testImplementation 'org.aspectj:aspectjweaver:1.9.19'
     testImplementation "io.qameta.allure:allure-selenide:${allureVersion}"
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testImplementation 'org.slf4j:slf4j-simple:2.0.7'
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.9.0')
+    testImplementation('org.aeonbits.owner:owner:1.0.4')
+    testImplementation 'org.assertj:assertj-core:3.27.3'
 }
 
 

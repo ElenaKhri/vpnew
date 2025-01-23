@@ -12,35 +12,21 @@ public class OekPage {
                             fio = $x("//input[@placeholder='Фамилия Имя Отчество']"),
                             buttonPay = $x("//a[contains(@href, '/storage/b/2016/02/01/soglashenie.pdf')]/parent::label/parent::div/button");
 
-
-
-
-    public OekPage setAccountNumber(String value){
+    public OekPage setData(String value){
         accountNumber.shouldBe(visible).setValue(value);
-        return this;
-    }
-
-    public OekPage pressButtonNext (){
         buttonNext.shouldBe(visible).click();
-        return this;
-    }
+        return this;}
 
-    public OekPage setFio(String fIo){
+    public OekPage setData(String fIo, String serviceName, String amount){
         fio.shouldBe(visible).setValue(fIo);
         actions().sendKeys(Keys.TAB).perform();
-        return this;
-    }
-
-    public OekPage setServiceAmount(String serviceName, String amount){
         String xpath = String.format("//label[text()='Вид платежа и сумма']/parent::div/child::div/child::div/child::div/div/label[contains(text(), '%s')]/../following-sibling::div/input", serviceName);
         SelenideElement service = $x(xpath);
         service.shouldBe(visible).setValue(amount);
-        return this;
-    }
+        return this;}
 
     public BasketPage processedToPayment(){
         buttonPay.shouldBe(visible).click();
-        return new BasketPage();
-    }
+        return new BasketPage();}
 
 }

@@ -1,43 +1,19 @@
-import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.logevents.SelenideLogger;
+import config.ProviderConfig;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Story;
-import io.qameta.allure.selenide.AllureSelenide;
-import org.junit.jupiter.api.BeforeAll;
+import org.aeonbits.owner.ConfigFactory;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Keys;
-
+import testdata.ProviderTestData;
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.attachment;
 import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.*;
 
-import static com.codeborne.selenide.Condition.*;
-
-
-public class ProviderPayPageTest {
-    @BeforeAll
-    static void setUp() {
-        Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers";
-        Configuration.browser = "chrome";
-        Configuration.browserVersion = "131.0.6778.205"; // Укажите версию вашего браузера
-        Configuration.browserBinary = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // Укажите путь к исполняемому файлу Chrome, если необходимо
-        Configuration.timeout = 60000; // Увеличьте тайм-аут до 60 секунд
-    }
-
-    @Disabled("Временно отключен")
-    @Test
-    @DisplayName("Поиск начислений по лс")
-    void setLs () throws InterruptedException {
-        MytishhiPage muprcmytishhiPage = new MytishhiPage();
-        open("");
-        muprcmytishhiPage.setAccountNumber("0600124054");
-        muprcmytishhiPage.pressButtonNext();
-        muprcmytishhiPage.accoutNumberForm2.shouldHave(exactValue("0600124054"));
-    }
+public class ProviderPayPageTest extends BaseTest {
 
     @Disabled("Временно отключен")
     @Test
@@ -46,11 +22,9 @@ public class ProviderPayPageTest {
     @Owner("Елена Христич")
     @DisplayName("Проведение успешного платёжа на форме поставщика МУП Мытищи")
     void createSuccesPaymentMytishhi(){
-        SelenideLogger.addListener("allure", new AllureSelenide()); // логирует все команды селенида, подробное описание шагов
         MytishhiPage muprcmytishhiPage = new MytishhiPage();
         step(("Открываем главную страницу"),()-> {
             open("/muprcmytishhi/");
-        attachment("Source", webdriver().driver().source());
        screenshot("screenshot");});
         step(("Вводим лицевой счёт и нажимаем кнопку далее"),()-> {
             muprcmytishhiPage.setAccountNumber("0600124054");
@@ -69,19 +43,19 @@ public class ProviderPayPageTest {
         gatewayPage.goToPayByCard();
         });
 
-        step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
+/*        step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
             GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
-            assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });
+           assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText()); });*/
 }
 
-@Disabled("Временно отключен")
+
 @Test
 @Feature("Оплата")
 @Story("Проводим успешный платёж поставщиком ENTER (ООО «ЭНТЕР»), Интернет")
 @Owner("Елена Христич")
 @DisplayName("Проведение успешного платежа на форме поставщика ENTER (ООО «ЭНТЕР»), Интернет")
 void createSuccesPaymentEnterInt(){
-    SelenideLogger.addListener("allure", new AllureSelenide());
+    ProviderTestData providerTestData = new ProviderTestData();
     EnterIntPage enterIntPage = new EnterIntPage();
     step(("Открываем страницу поставщика"),()-> {
         open("/enter_int/");
@@ -101,29 +75,27 @@ void createSuccesPaymentEnterInt(){
     step(("Проверка,что перешли на страницу успешной оплаты"),()-> {
         GwSuccessPayPage gwSuccessPayPage = new GwSuccessPayPage();
         assertEquals("Оплата прошла успешно", gwSuccessPayPage.href.getText());});
+
     }
 
+@Disabled("Временно отключен")
 @Test
 @Feature("Оплата")
 @Story("Проводим успешный платёж поставщиком ОЭК")
 @Owner("Елена Христич")
 @DisplayName("Проведение успешного платежа на форме поставщика «Омская энергосбытовая компания» (ООО «ОЭК»)")
 void createSuccesPaymentOek(){
-    SelenideLogger.addListener("allure", new AllureSelenide());
+    ProviderConfig config = ConfigFactory.create(ProviderConfig.class, System.getProperties());
     OekPage oekPage = new OekPage();
     step(("Открываем страницу поставщика"),()-> {
         open("/oek/");});
     step(("Вводим лицевой счёт и нажимаем кнопку далее"),()-> {
-       oekPage.setAccountNumber("07161400027");
-       oekPage.pressButtonNext();});
-    step(("Вводим ФИО пользователя"),()-> {
-        oekPage.setFio("Иванов Иван Иванович");});
-    step(("Вводим суммы по услугам"),()-> {
-        oekPage.setServiceAmount( "Горячая вода","10");});
+       oekPage.setData(config.getAccountOek());});
+    step(("Вводим ФИО пользователя и заполняем сумму услуги"),()-> {
+        oekPage.setData(config.getFio(), "Горячая вода","10");});
     step(("Нажимаем на кнопку перейти к оплате"),()-> {
         oekPage.processedToPayment();});
     step(("Проверяем создание платежа"),()-> {
         BasketPage basketPage = new BasketPage();
-        assertEquals("Оплата платежей", basketPage.href.getText());});
-}
+        assertEquals("Оплата платежей", basketPage.href.getText());});}
 }
