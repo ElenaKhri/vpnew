@@ -4,7 +4,6 @@ on: workflow_dispatch
 
 jobs:
   test:
-    # Определяем, где будет выполняться задача
     runs-on: ubuntu-22.04
     steps:
       # Выкачиваем репозиторий
@@ -28,20 +27,30 @@ jobs:
 
       # Запускаем Selenoid
       - name: Start Selenoid
-        run: docker run -d -p 4444:4444 my-selenoid
+        run: docker run -d -p 4444:4444 --name my-selenoid my-selenoid
 
       # Проверяем статус Docker
       - name: Check Docker status
         run: docker info
 
+      # Проверяем, что контейнер Selenoid запущен
+      - name: Check Selenoid container status
+        run: docker ps -a --filter "name=my-selenoid"
+
       # Проверяем логи Docker
       - name: Check Docker logs
-        run: docker logs $(docker ps -q --filter "name=my-selenoid")
+        run: |
+          CONTAINER_ID=$(docker ps -q --filter "name=my-selenoid")
+          if [ -z "$CONTAINER_ID" ]; then
+            echo "Selenoid container is not running"
+            exit 1
+          fi
+          docker logs $CONTAINER_ID
 
       # Проверяем конфигурацию Selenoid
       - name: Check Selenoid configuration
         run: |
-          docker exec -it $(docker ps -q --filter "name=my-selenoid") cat /etc/selenoid/browsers.json
+          docker exec -it my-selenoid cat /etc/selenoid/browsers.json
 
       # Проверяем сетевые настройки
       - name: Check network settings
@@ -84,7 +93,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      # Генерируем отчет
+      # Генерируем отчет Allure
       - name: Generate Allure report
         uses: simple-elf/allure-report-action@master
         if: always()
@@ -94,7 +103,7 @@ jobs:
           allure_report: allure-report
           allure_history: allure-history
 
-      # Публикуем отчет
+      # Публикуем отчет Allure
       - name: Publish Allure report
         uses: peaceiris/actions-gh-pages@v2
         if: always()
