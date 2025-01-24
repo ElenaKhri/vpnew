@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1","Проведение успешного платёжа на форме поставщика МУП Мытищи","","Fri Jan 24 06:55:23 GMT 2025","skipped","Fri Jan 24 06:55:23 GMT 2025","","ProviderPayPageTest","ProviderPayPageTest","createSuccesPaymentMytishhi"
+"","0","Проведение успешного платежа на форме поставщика «Омская энергосбытовая компания» (ООО «ОЭК»)","","Fri Jan 24 06:55:24 GMT 2025","skipped","Fri Jan 24 06:55:24 GMT 2025","","ProviderPayPageTest","ProviderPayPageTest","createSuccesPaymentOek"
+"","788","Проведение успешного платежа на форме поставщика ENTER (ООО «ЭНТЕР»), Интернет","","Fri Jan 24 06:55:23 GMT 2025","broken","Fri Jan 24 06:55:24 GMT 2025","","ProviderPayPageTest","ProviderPayPageTest","createSuccesPaymentEnterInt"
