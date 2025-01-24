@@ -16,8 +16,13 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # Настраиваем Selenoid
-      - uses: Xotabu4/selenoid-github-action@v2
+      # Собираем Docker образ
+      - name: Build Selenoid Docker image
+        run: docker build -t my-selenoid .
+
+      # Запускаем Selenoid
+      - name: Start Selenoid
+        run: docker run -d -p 4444:4444 my-selenoid
 
       # Устанавливаем OpenVPN
       - name: Install OpenVPN
@@ -36,12 +41,7 @@ jobs:
         run: |
           sleep 10  # ждем, пока OpenVPN установит соединение
           ip a  # проверяем сетевые интерфейсы
-          curl -I https://www-test.vseplatezhi.ru  # проверяем доступность интернета
-
-      # Копируем browsers.json в контейнер Selenoid
-      - name: Copy browsers.json to Selenoid container
-        run: |
-          docker cp ./browsers.json selenoid:/etc/selenoid/browsers.json
+          curl -I https://www.google.com  # проверяем доступность интернета
 
       # Проверяем статус Selenoid
       - name: Check Selenoid status
