@@ -50,7 +50,12 @@ jobs:
       # Проверяем конфигурацию Selenoid
       - name: Check Selenoid configuration
         run: |
-          docker exec -it my-selenoid cat /etc/selenoid/browsers.json
+          CONTAINER_ID=$(docker ps -q --filter "name=my-selenoid")
+          if [ -z "$CONTAINER_ID" ]; then
+            echo "Selenoid container is not running"
+            exit 1
+          fi
+          docker exec $CONTAINER_ID cat /etc/selenoid/browsers.json
 
       # Проверяем сетевые настройки
       - name: Check network settings
