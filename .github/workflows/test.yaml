@@ -3,12 +3,12 @@ name: Test
 on: workflow_dispatch
 
 jobs:
-  test:
+  tests:
     # Определяем, где будет выполняться задача
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       # Выкачиваем репозиторий
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v1  
 
       # Настраиваем Java
       - uses: actions/setup-java@v4
