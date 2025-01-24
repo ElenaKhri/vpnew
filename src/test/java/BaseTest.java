@@ -22,7 +22,8 @@ public class BaseTest {
         Configuration.browser = driverConfig.browserName();
         Configuration.browserSize = driverConfig.browserSize();
         Configuration.browserVersion = driverConfig.browserVersion();
-        Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers";
+        //Configuration.baseUrl = "https://www-test.vseplatezhi.ru/providers";
+        Configuration.baseUrl = "https://vp.ru/providers";
         Configuration.pageLoadStrategy = "eager";
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
