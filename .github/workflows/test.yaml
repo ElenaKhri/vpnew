@@ -8,25 +8,45 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # Выкачиваем репозиторий
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # Устанавливаем Docker
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       # Настраиваем Java
-      - uses: actions/setup-java@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # Собираем Docker образ
+      # Собираем Docker образ для Selenoid
       - name: Build Selenoid Docker image
         run: docker build -t my-selenoid .
 
       # Запускаем Selenoid
       - name: Start Selenoid
         run: docker run -d -p 4444:4444 my-selenoid
+
+      # Проверяем статус Docker
+      - name: Check Docker status
+        run: docker info
+
+      # Проверяем логи Docker
+      - name: Check Docker logs
+        run: docker logs $(docker ps -q --filter "name=my-selenoid")
+
+      # Проверяем конфигурацию Selenoid
+      - name: Check Selenoid configuration
+        run: |
+          docker exec -it $(docker ps -q --filter "name=my-selenoid") cat /etc/selenoid/browsers.json
+
+      # Проверяем сетевые настройки
+      - name: Check network settings
+        run: |
+          curl http://localhost:4444/wd/hub/status
 
       # Устанавливаем OpenVPN
       - name: Install OpenVPN
@@ -47,11 +67,6 @@ jobs:
           ip a  # проверяем сетевые интерфейсы
           curl -I https://www.google.com  # проверяем доступность интернета
 
-      # Проверяем статус Selenoid
-      - name: Check Selenoid status
-        run: |
-          curl http://localhost:4444/wd/hub/status
-
       # Делаем gradlew исполняемым
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -61,7 +76,8 @@ jobs:
         run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub --info
 
       # Скачиваем историю тестов
-      - uses: actions/checkout@v4
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
         if: always()
         continue-on-error: true
         with:
@@ -69,7 +85,8 @@ jobs:
           path: gh-pages
 
       # Генерируем отчет
-      - uses: simple-elf/allure-report-action@master
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@master
         if: always()
         with:
           gh_pages: gh-pages
@@ -78,7 +95,8 @@ jobs:
           allure_history: allure-history
 
       # Публикуем отчет
-      - uses: peaceiris/actions-gh-pages@v2
+      - name: Publish Allure report
+        uses: peaceiris/actions-gh-pages@v2
         if: always()
         env:
           PERSONAL_TOKEN: ${{ secrets.LENOCHKIN_TOKEN }}
