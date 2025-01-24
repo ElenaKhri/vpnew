@@ -12,7 +12,7 @@ public interface DriverConfig extends Config {
     @Key("browser_size")
     String browserSize();
 
-    @DefaultValue("132")
+    @DefaultValue("114")
     @Key("browser_version")
     String browserVersion();
 
